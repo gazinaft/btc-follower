@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs/promises';
 import { MailerService } from '@nestjs-modules/mailer';
-import { ExchangeService } from '../exchange/exchange.service';
+import { BtcDto } from '../dto/btc.dto';
 
 @Injectable()
 export class EmailService {
   filename: string;
 
-  constructor(
-    private readonly mailerService: MailerService,
-    private readonly exchangeService: ExchangeService,
-  ) {
+  constructor(private readonly mailerService: MailerService) {
     this.filename = 'emails.json';
   }
 
@@ -18,13 +15,11 @@ export class EmailService {
     const arr = await fs
       .readFile(this.filename)
       .then((x) => JSON.parse(x.toString()));
-    console.log(email);
     if (arr.emails.includes(email) || !this.validate(email)) {
       return false;
     }
     arr.emails.push(email);
     fs.writeFile(this.filename, JSON.stringify(arr));
-    console.log(arr);
     return true;
   }
 
@@ -42,11 +37,9 @@ export class EmailService {
       .then((x) => x.emails);
   }
 
-  async sendEmails(): Promise<void> {
+  async sendEmails(rate: BtcDto): Promise<void> {
     const emails = await this.getEmails();
-    const rate = await this.exchangeService.getExchangeRate();
     for (const email of emails) {
-      console.log(email);
       this.mailerService.sendMail({
         from: 'Noreply <test-btc-genesis@ukr.net>',
         to: email,

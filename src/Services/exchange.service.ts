@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
-import { BtcDto } from '../core/btc.dto';
+import { BtcDto } from '../dto/btc.dto';
 
 @Injectable()
 export class ExchangeService {
